@@ -1,0 +1,534 @@
+
+@font-face{font-family:"Chakra Petch";src:url("fonts/chakra-petch-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Chakra Petch";src:url("fonts/chakra-petch-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"Chakra Petch";src:url("fonts/chakra-petch-latin-700-normal.woff2") format("woff2");font-weight:700 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Inter";src:url("fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+
+:root{
+    --font-display:"Chakra Petch","Trebuchet MS",Arial,sans-serif;
+    --font-texto:"Inter",Arial,Helvetica,sans-serif;
+
+    /* Marco HUD por defecto */
+    --marco-borde:linear-gradient(135deg,rgba(55,216,255,.85),rgba(142,108,255,.45) 45%,rgba(55,216,255,.18));
+    --marco-corte:16px;
+    --marco-corte-chico:10px;
+
+    /* Escala de capas flotantes */
+    --z-flechas:310;
+    --z-dano:9000;
+}
+
+body{
+    font-family:var(--font-texto);
+    -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3,h4,
+.kicker,.caso-kicker,.material-tag,.nivel-tag,.paso-numero,.paso-registro-mini,
+.hud-mini,.progreso-hud,.menu-juego,.opcion-letra,.level-rank-v12,.level-life-status,
+.intentos-v8,.level-flow-v12,.stage-dot,.stage-progress,.regla-nivel-v8,
+.start-button,.start-level-button,.stage-next-button,.next-level-button,
+.accept-loss-button,.restart-button,.byte-help-button,.resource-button,
+.byte-help-kicker,.resource-header small,.completion-rewards,.ruta-node,
+.game-over-card .nivel-tag,.nombre-jugador input{
+    font-family:var(--font-display);
+}
+
+h1,h2,h3{letter-spacing:.01em}
+
+/* ---------- 2. Fondo: rejilla de operaciones ---------- */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+    background-image:
+        linear-gradient(rgba(55,216,255,.05) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(55,216,255,.05) 1px,transparent 1px);
+    background-size:46px 46px;
+    -webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 35%,#000 20%,transparent 85%);
+    mask-image:radial-gradient(ellipse 80% 70% at 50% 35%,#000 20%,transparent 85%);
+}
+
+/* ---------- 3. Portada ---------- */
+.registro-portada h1{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:.18em;
+    font-weight:700;
+    text-shadow:none;
+}
+.titulo-escudo{
+    font-size:.82em;
+    color:var(--cyan);
+    filter:drop-shadow(0 0 20px rgba(55,216,255,.55));
+    animation:escudoPulso 3.4s ease-in-out infinite;
+}
+.titulo-juego{
+    background:linear-gradient(100deg,#ffffff 0%,#d4f5ff 38%,var(--cyan) 62%,var(--purple) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    filter:drop-shadow(0 0 26px rgba(55,216,255,.28));
+}
+@keyframes escudoPulso{
+    0%,100%{transform:scale(1);filter:drop-shadow(0 0 16px rgba(55,216,255,.45))}
+    50%{transform:scale(1.06);filter:drop-shadow(0 0 30px rgba(55,216,255,.8))}
+}
+.registro-portada .kicker{
+    letter-spacing:.22em;
+    animation:parpadeoTerminal 6s steps(1) infinite;
+}
+@keyframes parpadeoTerminal{0%,96%,100%{opacity:1}97%{opacity:.35}98%{opacity:1}99%{opacity:.6}}
+
+.paso-numero{border-radius:0 !important;clip-path:polygon(25% 0,100% 0,100% 75%,75% 100%,0 100%,0 25%)}
+
+/* ---------- 4. Marcos augmented-ui ---------- */
+[data-augmented-ui]{
+    border:0 !important;
+    border-radius:0 !important;
+    --aug-border-all:1px;
+    --aug-border-bg:var(--marco-borde);
+    --aug-tl:var(--marco-corte);
+    --aug-tr:var(--marco-corte);
+    --aug-br:var(--marco-corte);
+    --aug-bl:var(--marco-corte);
+}
+
+/* Botones y opciones: cortes más chicos */
+label[data-augmented-ui],button[data-augmented-ui]{
+    --aug-tl:var(--marco-corte-chico);
+    --aug-tr:var(--marco-corte-chico);
+    --aug-br:var(--marco-corte-chico);
+    --aug-bl:var(--marco-corte-chico);
+}
+
+/* Cada nivel enmarca con su color de acento */
+.level-stage-v12 [data-augmented-ui]{
+    --aug-border-bg:linear-gradient(135deg,var(--level-accent),color-mix(in srgb,var(--level-accent) 25%,transparent) 55%,color-mix(in srgb,var(--level-accent) 55%,transparent));
+}
+.level-hero-v12[data-augmented-ui]{--aug-border-all:2px}
+
+/* Opciones de respuesta */
+.opcion[data-augmented-ui]{
+    --aug-border-bg:linear-gradient(90deg,color-mix(in srgb,var(--level-accent,#37d8ff) 55%,transparent),rgba(55,216,255,.12));
+    transition:transform .16s ease,background-color .16s ease;
+}
+.opcion[data-augmented-ui]:hover{
+    --aug-border-all:2px;
+    --aug-border-bg:var(--level-accent,#37d8ff);
+    transform:translateX(4px);
+}
+.opcion-letra{
+    border-radius:0 !important;
+    clip-path:polygon(30% 0,100% 0,100% 70%,70% 100%,0 100%,0 30%);
+}
+
+/* Estados con significado: error = rojo, logro = verde, game over = rojo/rosa */
+.wrong-answer-feedback[data-augmented-ui]{
+    --aug-border-all:2px;
+    --aug-border-bg:linear-gradient(135deg,var(--red),rgba(255,94,111,.25) 60%,var(--pink));
+}
+/* El panel del desafío tampoco lleva augmented-ui: es ancestro del botón
+   flotante de ascenso y su clip-path lo hacía invisible. Mismo efecto de
+   marco con el color del nivel, pero con box-shadow (no recorta). */
+.desafio-v8{
+    box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--level-accent,#37d8ff) 55%,transparent),
+               0 0 28px color-mix(in srgb,var(--level-accent,#37d8ff) 10%,transparent);
+}
+
+/* La tarjeta de nivel superado NO lleva augmented-ui: su clip-path recortaba
+   al botón flotante (fixed) "ENTRAR AL NIVEL N", que vive dentro de ella. */
+.feedback-bien{
+    box-shadow:inset 0 0 0 1px rgba(64,227,140,.35),0 0 34px rgba(64,227,140,.14);
+}
+.game-over-card[data-augmented-ui]{
+    --aug-border-all:2px;
+    --aug-border-bg:linear-gradient(135deg,var(--red),var(--pink));
+    --aug-tl:26px;--aug-br:26px;
+}
+.accept-loss-button[data-augmented-ui]{--aug-border-bg:var(--red)}
+.next-level-button[data-augmented-ui]{--aug-border-all:2px;--aug-border-bg:var(--green)}
+.start-button[data-augmented-ui],
+.start-level-button[data-augmented-ui],
+.stage-next-button[data-augmented-ui]{
+    --aug-border-all:2px;
+    --aug-border-bg:linear-gradient(90deg,var(--cyan),var(--purple));
+}
+
+/* Foco de teclado: clip-path recorta el outline, así que el foco
+   se muestra engrosando el marco en amarillo (mismo color que antes). */
+.control-opcion:focus-visible + label[data-augmented-ui],
+#nivel-1-activo:focus-visible + .start-level-button[data-augmented-ui],
+.level-stage-v12:has(.level-win-input:focus-visible) .opcion-correcta[data-augmented-ui],
+body:has(#paso-fotos:focus-visible) .primer-paso-video-screen .stage-next-button[data-augmented-ui],
+body:has(#paso-info:focus-visible) .primer-paso-fotos-screen .stage-next-button[data-augmented-ui],
+body:has(.global-loss:focus-visible) .wrong-answer-feedback[data-augmented-ui] .accept-loss-button[data-augmented-ui],
+body:has(.level-start-state:focus-visible) .next-level-button[data-augmented-ui],
+button[data-augmented-ui]:focus-visible{
+    --aug-border-all:3px !important;
+    --aug-border-bg:var(--yellow) !important;
+    outline:none !important;
+}
+
+/* ---------- 5. Íconos (Bootstrap Icons) ---------- */
+.bi{line-height:1;vertical-align:-.12em}
+.ico-vida{color:var(--red)}
+.ico-peligro{color:var(--pink)}
+.ico-trofeo{color:var(--yellow)}
+.ico-gema{color:var(--cyan)}
+.ico-tiempo{color:#9fd8ff}
+.ico-byte{color:var(--cyan)}
+.ico-insignia{color:var(--orange)}
+.material-icono .bi{color:var(--level-accent,#37d8ff);filter:drop-shadow(0 0 10px color-mix(in srgb,var(--level-accent,#37d8ff) 60%,transparent))}
+.game-over-icon .bi{color:var(--red);filter:drop-shadow(0 0 22px rgba(255,94,111,.6))}
+.wrong-feedback-title > span .bi{font-size:.8em;vertical-align:0}
+.tip-num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:1.5em;height:1.5em;margin-right:.2em;
+    background:var(--cyan);color:#02111d;font-size:.82em;font-weight:700;
+    clip-path:polygon(25% 0,100% 0,100% 75%,75% 100%,0 100%,0 25%);
+}
+
+/* ---------- 6. HUD ---------- */
+.hud-mini strong,
+.progreso-valor{
+    font-family:var(--font-display);
+    font-variant-numeric:tabular-nums;
+}
+
+/* ---------- 7. Flechas flotantes: riel lateral (ya no tapan botones) ---------- */
+.nav-float{
+    left:auto !important;
+    right:20px !important;
+    width:44px !important;
+    height:44px !important;
+    transform:none !important;
+    border:0 !important;
+    border-radius:0 !important;
+    clip-path:polygon(30% 0,100% 0,100% 70%,70% 100%,0 100%,0 30%);
+    background:linear-gradient(145deg,rgba(13,49,75,.92),rgba(7,25,39,.92)) !important;
+    box-shadow:inset 0 0 0 1px rgba(55,216,255,.55) !important;
+    font-size:1.25rem !important;
+    z-index:var(--z-flechas) !important;
+}
+.nav-float:hover,
+.nav-float:focus-visible{
+    background:linear-gradient(145deg,#145176,#0b2b44) !important;
+    box-shadow:inset 0 0 0 2px var(--yellow) !important;
+    scale:1.08;
+}
+.nav-subir{top:calc(50% - 50px) !important;bottom:auto !important}
+.nav-bajar{top:calc(50% + 6px) !important;bottom:auto !important}
+
+/* Pantallas medianas y grandes: el riel va pegado al BORDE DERECHO DEL JUEGO
+   (no al de la ventana), así en monitores de 28" o más no queda perdido.
+   Cálculo: mitad de la pantalla + mitad del ancho del juego + 16px de aire
+   + 44px de la flecha. Nunca a menos de 12px del borde de la ventana.
+   · Registro y barra de perfil: 1180px de ancho → 590 + 60 = 650
+   · Paneles de nivel: 1120px de ancho → 560 + 60 = 620 */
+@media (min-width:761px){
+    .nav-subir-registro,
+    .nav-bajar-registro{right:max(12px, calc(50% - 650px)) !important}
+    .nav-float[class*="nav-up-l"],
+    .nav-float[class*="nav-down-l"]{right:max(12px, calc(50% - 620px)) !important}
+}
+
+/* En celular el riel lateral taparía texto: las flechas pasan abajo
+   al centro, entre RECURSOS y AYUDA, como una barra de control. */
+@media (max-width:760px){
+    .nav-float{width:42px !important;height:42px !important}
+    .nav-subir{top:auto !important;bottom:16px !important;right:calc(50% + 4px) !important}
+    .nav-bajar{top:auto !important;bottom:16px !important;right:auto !important;left:calc(50% + 4px) !important}
+}
+
+/* HUD compacto (≤900px): styles.css oculta el texto de la etiqueta con
+   font-size:0 y mostraba solo la primera letra (el emoji). El ícono
+   ahora es un elemento propio y necesita su tamaño. */
+@media (max-width:900px){
+    body:has(#partida-activa:checked) .registro-overlay .hud-mini p:first-child .bi{font-size:.8rem}
+}
+
+/* ---------- 7b. Nombre en el certificado: anclado al renglón ----------
+   El nombre vive en el input de la barra de perfil (sin JS no se puede
+   copiar). Antes se ubicaba con top fijo (177px/148px…) y se desalineaba
+   según la pantalla. Con anchor positioning queda pegado al renglón del
+   certificado. Navegadores sin soporte usan la posición anterior. */
+@supports (anchor-name: --a){
+    @media screen{
+        /* Requisito del ancla: el certificado no puede ser un overlay fixed
+           ubicado después de la barra de perfil; se dibuja en el flujo. */
+        body:has(input[name="l5-win"]:checked) .victory-screen-v12{
+            position:relative !important;
+            inset:auto !important;
+            width:100% !important;
+            margin:0 !important;
+            min-height:100vh;
+        }
+        /* Antes el overlay fixed tapaba estos elementos; en el flujo hay que ocultarlos. */
+        body:has(#nivel-1-activo:checked):has(input[name="l5-win"]:checked) .resource-button,
+        body:has(#nivel-1-activo:checked):has(input[name="l5-win"]:checked) .byte-help-button,
+        body:has(input[name="l5-win"]:checked) > footer{
+            display:none !important;
+        }
+        /* Certificado COMPLETO en pantalla. Antes: alto fijo de 100vh con
+           overflow:hidden → en una notebook (1366×768) se perdían los últimos
+           200px (pie, fecha de emisión) detrás de la barra de botones. Ahora
+           la página se desplaza. El papel usa overflow:clip: recorta adornos
+           pero NO es contenedor desplazable, así enfocar la fecha no lo corre. */
+        body:has(input[name="l5-win"]:checked) .victory-screen-v15{
+            height:auto !important;
+            min-height:100vh !important;
+            overflow:visible !important;
+        }
+        body:has(input[name="l5-win"]:checked) .certificate-shell-v15{
+            height:auto !important;
+            max-height:none !important;
+            overflow:visible !important;
+        }
+        body:has(input[name="l5-win"]:checked) .certificate-paper-v15{
+            height:auto !important;
+            overflow:clip !important;
+        }
+        body:has(input[name="l5-win"]:checked) .certificate-name-slot-v15{
+            anchor-name:--renglon-nombre;
+        }
+        body:has(#partida-activa:checked):has(input[name="l5-win"]:checked) .registro-overlay .perfil-identidad{
+            position-anchor:--renglon-nombre;
+            top:auto !important;
+            bottom:anchor(--renglon-nombre bottom) !important;
+            left:anchor(--renglon-nombre center) !important;
+            position-visibility:anchors-visible;
+        }
+    }
+}
+
+/* ---------- 8. Animaciones de juego (Animate.css + propias) ----------
+   REGLA: las animaciones de entrada usan fill-mode "backwards", nunca
+   "both"/"forwards". Un transform que queda aplicado (aunque sea la
+   identidad) convierte al elemento en contenedor de sus hijos fixed.
+   Así pasó con la tarjeta de nivel superado: el botón flotante
+   "ENTRAR AL NIVEL N" se anclaba a la tarjeta y tapaba los premios.
+   Por eso esa tarjeta entra solo con opacidad (aparecerLogro). */
+@keyframes aparecerLogro{from{opacity:0}to{opacity:1}}
+
+/* Al equivocarse: la devolución sacude la tarjeta */
+.wrong-feedback-state:checked ~ .wrong-answer-feedback{
+    animation:animate__headShake .7s ease-in-out backwards;
+}
+
+/* Al perder una vida: destello rojo en pantalla + golpe en el corazón.
+   Se alternan dos nombres de animación para que se reinicie en cada vida. */
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:var(--z-dano);
+    pointer-events:none;
+    opacity:0;
+    background:radial-gradient(ellipse at center,transparent 45%,rgba(255,40,70,.55) 100%);
+}
+body:has(#loss-1:checked)::after,
+body:has(#loss-3:checked)::after,
+body:has(#loss-5:checked)::after{animation:danoA .75s ease-out both}
+body:has(#loss-2:checked)::after,
+body:has(#loss-4:checked)::after{animation:danoB .75s ease-out both}
+@keyframes danoA{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+@keyframes danoB{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+
+body:has(#loss-1:checked) .hud-mini .ico-vida,
+body:has(#loss-3:checked) .hud-mini .ico-vida,
+body:has(#loss-5:checked) .hud-mini .ico-vida{display:inline-block;animation:golpeA .9s ease-in-out both}
+body:has(#loss-2:checked) .hud-mini .ico-vida,
+body:has(#loss-4:checked) .hud-mini .ico-vida{display:inline-block;animation:golpeB .9s ease-in-out both}
+@keyframes golpeA{0%,100%{transform:scale(1)}20%{transform:scale(1.55) rotate(-12deg)}40%{transform:scale(.9) rotate(8deg)}60%{transform:scale(1.25)}}
+@keyframes golpeB{0%,100%{transform:scale(1)}20%{transform:scale(1.55) rotate(-12deg)}40%{transform:scale(.9) rotate(8deg)}60%{transform:scale(1.25)}}
+
+/* Nivel superado: la tarjeta entra, el check celebra, las recompensas suben */
+.level-stage-v12:has(.level-win-input:checked) .feedback-bien{
+    animation:aparecerLogro .45s ease-out backwards;
+}
+.level-stage-v12:has(.level-win-input:checked) .completion-check{
+    animation:animate__tada 1s .35s ease-in-out backwards;
+}
+.level-stage-v12:has(.level-win-input:checked) .completion-rewards > span{
+    display:inline-flex;
+    align-items:center;
+    gap:.4em;
+    animation:animate__fadeInUp .5s ease-out backwards;
+}
+.level-stage-v12:has(.level-win-input:checked) .completion-rewards > span:nth-child(2){animation-delay:.15s}
+.level-stage-v12:has(.level-win-input:checked) .completion-rewards > span:nth-child(3){animation-delay:.3s}
+.next-level-button{animation:pulsoListo 1.8s 1.2s ease-in-out infinite}
+@keyframes pulsoListo{0%,100%{filter:drop-shadow(0 0 0 transparent)}50%{filter:drop-shadow(0 0 14px rgba(64,227,140,.55))}}
+
+/* Game over: la tarjeta cae desde arriba */
+.game-over-card{animation:animate__backInDown .8s ease-out backwards}
+
+/* Cada nivel entra con un fundido hacia arriba */
+.level-hero-v12{animation:animate__fadeInUp .6s ease-out backwards}
+
+/* Botón principal de inicio: invita a la acción */
+.start-level-button{animation:pulsoInicio 2.2s ease-in-out infinite}
+@keyframes pulsoInicio{0%,100%{filter:drop-shadow(0 0 0 transparent)}50%{filter:drop-shadow(0 0 16px rgba(55,216,255,.55))}}
+
+/* Reducir movimiento: sin sacudidas ni pulsos (el cronómetro se trata en styles.css) */
+@media (prefers-reduced-motion: reduce){
+    .titulo-escudo,.registro-portada .kicker,.next-level-button,.start-level-button,
+    .level-hero-v12,.game-over-card,.wrong-answer-feedback,.feedback-bien,
+    .completion-check,.completion-rewards > span,.hud-mini .ico-vida{animation:none !important}
+    body::after{animation:none !important;opacity:0 !important}
+}
+
+/* Fecha de emisión: sin JS no hay fecha real, así que el alumno la elige con el
+   calendario nativo (Chrome/Edge traen el botón "Hoy") y el valor se imprime. */
+.certificate-date-input-v20{
+    display:block;
+    width:12em;
+    margin-top:3px;
+    padding:2px 0;
+    border:0;
+    border-bottom:1px solid #b9a774;
+    background:transparent;
+    color:#102d45;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:1rem;
+    font-weight:700;
+    color-scheme:light;
+}
+.certificate-date-input-v20:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+.certificate-date-hint-v20{
+    display:none;
+    margin-top:4px;
+    color:#b4532a;
+    font-size:.72rem;
+    font-weight:700;
+    cursor:pointer;
+}
+.certificate-emission-v15:has(.certificate-date-input-v20:invalid) .certificate-date-hint-v20{display:block}
+
+
+
+/* ---------- 8c. Cartel "Imprimir / Guardar como PDF" ----------
+   Sin JavaScript ningún botón puede abrir la ventana de impresión
+   (requiere window.print()); el cartel enseña el atajo y la ruta por menú. */
+.print-atajo-v20{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin:14px 0 6px !important;
+    font-family:var(--font-display);
+    font-size:1.4rem;
+    font-weight:700;
+}
+.print-atajo-v20 kbd,
+.print-atajo-nota-v20 kbd{
+    display:inline-block;
+    min-width:2.4em;
+    padding:.35em .6em;
+    border:1px solid rgba(55,216,255,.6);
+    border-bottom-width:4px;
+    border-radius:8px;
+    background:#0b2236;
+    color:#fff;
+    font-family:var(--font-display);
+    font-size:1em;
+    text-align:center;
+    box-shadow:0 0 18px rgba(55,216,255,.25);
+}
+.print-atajo-nota-v20 kbd{font-size:.85em;padding:.15em .45em;border-bottom-width:2px;box-shadow:none}
+.print-atajo-nota-v20{text-align:center;font-size:.9rem}
+.print-pasos-v20{
+    margin:14px 0;
+    padding-left:1.3em;
+    text-align:left;
+    line-height:1.5;
+}
+.print-pasos-v20 li{margin:6px 0}
+.print-nota-v20{
+    padding:8px 10px;
+    border-left:3px solid var(--cyan);
+    background:rgba(55,216,255,.08);
+    font-size:.85rem;
+    text-align:left;
+}
+
+/* El nombre del certificado vive en otra capa (barra de perfil, z-index 820)
+   y se veía por encima del cartel. Solo en pantalla: al imprimir sale igual. */
+@media screen{
+    body:has(#cert-print-help:checked) .registro-overlay .perfil-identidad{visibility:hidden !important}
+}
+
+/* ---------- 8b. Estado del juego a prueba de teclado ----------
+   Sin JS, el estado vive en checkboxes/radios ocultos. Al clicar un <label>
+   el FOCO pasa a ese input oculto, y teclas de desplazamiento lo alteraban:
+   · ↑/↓ cambiaban el radio de puntaje (lN-win) o de inicio de nivel (lN-start)
+     → las vidas del certificado no coincidían con las del QR;
+   · Espacio destildaba un error ya aceptado → se recuperaba la vida.
+   Un input de estado que ya quedó marcado se retira del render: pierde el
+   foco y ninguna tecla puede cambiarlo. :checked, + y ~ siguen funcionando. */
+.global-loss:checked,
+.level-start-state:checked,
+.level-win-input:checked,
+.wrong-feedback-state:checked,
+#paso-fotos:checked,
+#paso-info:checked,
+#nivel-1-activo:checked{
+    display:none !important;
+}
+
+/* ---------- 9. Impresión: el certificado no lleva efectos de pantalla ---------- */
+@media print{
+    body::before,body::after{display:none !important}
+
+    /* BUG heredado de v19: la regla de impresión
+       ".game-shell>*:not(#contenido-principal){display:none!important}"
+       se escribió cuando <main> era hijo directo de .game-shell. Luego <main>
+       quedó dentro de <form id="game-state"> y el formulario (con el
+       certificado adentro) se ocultaba: el PDF salía solo con el nombre.
+       Mismo peso de especificidad (1,1,1 > 1,1,0) para volver a mostrarlo. */
+    .game-shell > form#game-state{display:block !important}
+
+    /* Nombre sobre el renglón en papel. Chrome no aplica anchor positioning
+       al paginar, pero en A4 las medidas son fijas: valor medido sobre el
+       PDF real con el zoom de abajo (renglón a 67,2 mm; antes top:55mm lo ponía sobre
+       "Certifico que:"). */
+    body:has(#partida-activa:checked):has(input[name="l5-win"]:checked) .registro-overlay .perfil-identidad{
+        top:53mm !important;
+    }
+
+    /* Resumen: métricas + verificación lado a lado para que el QR entre en la hoja. */
+    .certificate-summary-v15{
+        display:grid !important;
+        grid-template-columns:minmax(0,1fr) 42mm !important;
+        align-items:stretch !important;
+    }
+    .certificate-main-metrics-v15{grid-template-columns:repeat(4,minmax(0,1fr)) !important}
+    .qr-stack-v15 .qr-variant img{width:22mm !important;height:22mm !important}
+    .certificate-verification-v15 p{font-size:6.5pt !important;line-height:1.25 !important;margin:1mm 0 0 !important}
+    .certificate-main-metrics-v15 article{min-height:0 !important}
+
+    /* BUG heredado: el CSS de impresión oculta "footer" (pensado para el pie
+       del sitio) y se llevaba el pie del certificado (sello y firma). */
+    .certificate-footer-v15{display:grid !important;visibility:visible !important}
+
+    /* Fecha: se imprime el valor elegido; si quedó vacía sale solo el renglón. */
+    .certificate-date-hint-v20{display:none !important}
+    .certificate-date-input-v20::-webkit-calendar-picker-indicator{display:none !important}
+    .certificate-date-input-v20:invalid{color:transparent !important}
+    /* Si la fecha quedó enfocada al presionar Ctrl+P: sin recuadro ni resaltado. */
+    .certificate-date-input-v20{outline:none !important;box-shadow:none !important}
+    .certificate-date-input-v20::-webkit-datetime-edit-day-field,
+    .certificate-date-input-v20::-webkit-datetime-edit-month-field,
+    .certificate-date-input-v20::-webkit-datetime-edit-year-field{background:transparent !important;color:#102d45 !important}
+    /* El papel nunca se imprime "desplazado": no es contenedor de scroll. */
+    #victoria .certificate-paper-v15,
+    #victoria .certificate-shell-v15{overflow:clip !important}
+
+    /* Todo el contenido (incluido el pie con fecha de emisión) entra en un A4. */
+    .certificate-paper-v15{zoom:.84}
+}
